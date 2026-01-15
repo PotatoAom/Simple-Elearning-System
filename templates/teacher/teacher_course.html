@@ -1,0 +1,96 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block content %}
+<header class="container-fluid mx-0">
+<h1 class="display-1">Instructor Courses</h1>
+<ul class="breadcrumb">
+    <li><a href="/home">Home</a></li>
+    <li>Courses</li>
+</ul>
+</header>
+
+
+<div class="container my-5 p-5">
+    <h3>จัดการคอร์สเรียนตนเอง<button type="button" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#myModal" style="float: right;">สร้างคอร์สใหม่ +</button></h3>
+
+    <div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title">สร้างคอร์สใหม่</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    ชื่อคอร์ส : <input type="text" class="form-control" name="course_name" placeholder="ชื่อวิชา" required>
+                    เวลาที่ใช้ในการเรียน : <input type="number" class="form-control" name="commit" min="1" max="24" value="1" placeholder="จำนวนชั่วโมง">
+                    หมวดหมู่คอร์ส : 
+                    <select name="subject" class="form-control">
+                        <option value="other">อื่นๆ</option>
+                        <option value="math">การคำนวณ</option>
+                        <option value="data">การวิเคราะห์ข้อมูล</option>
+                        <option value="it">เทคโนโลยีสารสนเทศ</option>
+                        <option value="programming">การเขียนโปรแกรม</option>
+                        <option value="development">การพัฒนาซอฟต์แวร์</option>
+                        <option value="ai">ปัญญาประดิษฐ์</option>
+                        <option value="design">การออกแบบ</option>
+                        <option value="economics">การเงิน/การลงทุน</option>
+                        <option value="marketing">การตลาด</option>
+                        <option value="philosophy">ปรัชญา</option>
+                        <option value="language">ภาษา</option>
+                        <option value="health">สุขภาพ</option>
+                        <option value="selfdev">การพัฒนาตนเอง</option> 
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">OK</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+
+    <form method="GET" style="display: flex; gap: 10px;">
+        <input type="text" name="search" placeholder="ค้นหาชื่อคอร์สเรียนที่ต้องการ..." value="{{ request.GET.search }}">
+        <button class="btn" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+        <a class="btn" href="/teacher/course" style="text-decoration: none; display: flex; align-items: center;"><i class="fa fa-times" aria-hidden="true"></i></a>
+    </form>
+    <hr>
+    <h5>จำนวนวิชาทั้งหมด [{{total_course}}] วิชา</h5>
+    <div class="content-loader" id="content-loader">
+        <div class="loader"></div>
+    </div>
+
+    <div class="content-body content-hidden" id="main-content">
+        <div class="course-container">
+        {% for c in course %}
+            <div class="course" style="color: gray;">
+                <div class="course-header" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    {{c.course_name}}
+                </div>
+
+                <div style="position: relative; overflow: hidden;">
+                    <img class="image" src="{{c.image.url}}" alt="{{c.course_name}}">
+                    <div class="middle">
+                        <a href="{{ c.get_teacher_url }}">
+                            <div class="text">ดูเพิ่มเติม</div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="course-footer">
+                    {{c.get_subject_display}}
+                </div>
+                <div class="course-footer" style="background-color: #fbe8a6; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;">
+                    <i class="fa fa-calendar" aria-hidden="true"></i> {{c.create_date|date:"d/m/Y"}}
+                </div>
+            </div>
+        {% empty %}
+            <p style="color:gray">ยังไม่ได้ทำการสร้างคอร์สเรียน</p>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

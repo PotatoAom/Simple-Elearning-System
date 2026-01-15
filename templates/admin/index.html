@@ -1,0 +1,102 @@
+{% extends "admin/base_site.html" %}
+{% load log %}
+
+{% block content %}
+    <div class="custom-welcome">
+        <p>Welcome to the Admin Dashboard!</p>
+        <p>Manage and handle your application content with ease.</p>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="dashboard-card"><h1 class="display-1">{{ student }}</h1><h5>Students</h5></div>
+            </div>
+            <div class="col-lg-4">
+                <div class="dashboard-card"><h1 class="display-1">{{ teacher }}</h1><h5>Instructors</h5></div>
+            </div>
+            <div class="col-lg-4">
+                <div class="dashboard-card"><h1 class="display-1">{{ course }}</h1><h5>Courses</h5></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="module" id="recent-actions-module">
+        <h2 style="margin-bottom: 15px;">My Recent Actions</h2>
+        {% get_admin_log 10 as admin_log for_user user %}
+        
+        {% if not admin_log %}
+            <p>None available</p>
+        {% else %}
+            <ul class="actionlist">
+            {% for entry in admin_log %}
+                <li class="{% if entry.is_addition %}addlink{% elif entry.is_change %}changelink{% else %}deletelink{% endif %}">
+                    {% if entry.is_deletion or not entry.get_admin_url %}
+                        {{ entry.object_repr }}
+                    {% else %}
+                        <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                    {% endif %}
+                    <br>
+                    <span class="mini quiet">
+                        {% if entry.content_type %}
+                            <span class="changelink">{% filter capfirst %}{{ entry.content_type.name }}{% endfilter %}</span>
+                        {% else %}
+                            Unknown content
+                        {% endif %}
+                        | {{ entry.action_time|date:"DATETIME_FORMAT" }}
+                    </span>
+                </li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    {{ block.super }}
+{% endblock %}
+
+{% block extrahead %}
+    <style>
+        .custom-welcome {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .container {
+            padding: 0 15px;
+            margin: 20px;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .col-lg-4 {
+            flex: 0 0 30%;
+            max-width: 30%;
+            padding: 15px;
+            display: flex;
+        }
+
+        .dashboard-card {
+            background-color: #303c6c;
+            padding: 30px 20px;
+            border-radius: 12px;
+            text-align: center;     
+            flex: 1;
+            width: 100%;  
+        }
+
+        @media screen and (max-width: 1360px) {
+            .col-lg-4 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+{% endblock %}

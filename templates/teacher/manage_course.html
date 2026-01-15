@@ -1,0 +1,37 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block content %}
+<div class="body-container">
+    <div class="row">
+
+        <div class="leftcolumn">
+            <div class="cardbox">
+                <div class="content-loader" id="content-loader">
+                    <div class="loader"></div>
+                </div>
+
+                <div class="content-body content-hidden" id="main-content">
+                    <h3>{{course}}</h3>
+                    <hr>
+                    <img class="image" src="{{course.image.url}}" style="width: 50%; border-radius: 20px;"><br>   
+                    <form method = "post" enctype="multipart/form-data"> 
+                        {% csrf_token %}
+                        <label for="course_name" style="display: block;">ชื่อคอร์ส</label><input style="display: block; color: grey;" type="text" name="course_name" value="{{course.course_name}}" required>
+                        <label for="commit" style="display: block;">ชั่วโมง</label><input style="display: block; color: grey;" type="number" name="commit" value="{{course.commit}}" min="1" max="24" required>
+                        <label for="image">รูปภาพ</label><input style="color: grey;" type="file" name="image" accept="image/*">
+                        <textarea name="description" maxlength="300" style="color: grey;" required>{{course.description}}</textarea>
+                        <br>
+                        <button class="btn btn-info" type="submit">OK</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="rightcolumn">
+            {% include 'teacher/teacher_menu.html' %}
+        </div>
+        
+    </div>
+</div>
+{% endblock content %}

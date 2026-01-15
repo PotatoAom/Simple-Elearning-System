@@ -1,0 +1,54 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block content %}
+<div id="loader-wrapper">
+    <div class="loader"></div>
+</div>
+
+
+<div id="content">
+
+    <div class="container my-5">
+
+        <div class="cardbox">
+            <a class="btn btn-info ms-auto" href="{% url 'join_course' course.id  %}" style="float: right;">ลงทะเบียนเรียน</a>
+            <p><img class="image" src="{{course.image.url}}" style="width: 50%; border-radius: 20px;"></p>
+            <h2>รหัสวิชา : {{course.id}} &nbsp;|&nbsp; {{course.course_name}}</h2>
+            <hr>
+            <h4>รายละเอียด :</h4>
+            <div class="mb-0 mb-md-5" style="color: gray; text-indent: 2em;">
+                <p>ชื่อผู้สอน : {{course.owner}}</p>
+                <p>รหัสคอร์สเรียน : {{course.join_code}}</p>
+                <p>เวลาในการเรียน : {{course.commit}} ชั่วโมง</p>
+                <p>วันที่สร้าง : {{course.date|date:"d / M / Y" }}</p>
+                <p>จำนวนบทเรียน : {{classroom}} บท</p>
+                <p>จำนวน Assignment : {{assign}} </p>
+            </div>
+            <h4>เนื้อหาโดยย่อ :</h4>
+            <p class="mb-0 mb-md-5" style="color: gray; text-indent: 2em;">{{course.description}}</p>
+        </div>
+
+        
+        <div class="cardbox">
+            <h2>รีวิวจากผู้เรียน</h2>
+            <hr>
+            {% for rating in rating %}
+            <p><i class="fa fa-star" aria-hidden="true" style="color:#ffe600"></i> {{rating.rating}}&nbsp; จาก ( {{rating_count}} ) รีวิว</p>
+            <div class="review-box mb-3 p-3" style="border: 1px solid #ddd; border-radius: 10px;">
+                <p><strong>{{ rating.user.first_name }} {{ rating.user.last_name|truncatechars:2}}</strong> &nbsp;-&nbsp; <small>{{ rating.date|date:"d/m/Y" }}</small></p>
+                <p>
+                    {% for i in "12345" %}
+                        <i class="fa fa-star {% if rating.rating|add:0 >= i|add:0 %}checked{% endif %}"></i>
+                    {% endfor %}
+                </p>
+                <p>{{ rating.comment }}</p>
+            </div>
+            {% empty %}
+            <p style="color: gray;">ยังไม่มีรีวิวสำหรับคอร์สนี้</p>
+            {% endfor %}
+        </div>
+
+    </div>
+
+</div>
+{% endblock%}

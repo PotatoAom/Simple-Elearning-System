@@ -1,0 +1,41 @@
+{% load static %}
+<div class="cardbox">
+    <h2>Menu</h2>
+    <p><a href="{% url 'manage_course' course.slug  %}">
+        <button class="button3" >รายละเอียดคอร์ส</button>
+    </a></p>
+
+    <p><a href="{% url 'document_upload' course.slug  %}">
+        <button class="button3">อัปโหลดเอกสารประกอบการเรียน</button>
+    </a></p>
+
+    <p><a href="{% url 'manage_course_content' course.slug  %}">
+        <button class="button3">เพิ่ม / ลบ / แก้ไขเนื้อหาบทเรียน</button>
+    </a></p>
+
+    <p><a href="{% url 'manage_assignment' course.slug  %}">
+        <button class="button3">เพิ่ม / ลบ / แก้ไข Assignments</button>
+    </a></p>
+
+    <p><a href="{% url 'manage_exam' course.id  %}">
+        <button class="button3">เพิ่ม / ลบ / แก้ไขแบบทดสอบ</button>
+    </a></p>
+
+    <p><a href="{% url 'manage_score' course.slug  %}">
+        <button class="button3">ดูคะแนนของนักเรียน</button>
+    </a></p>
+
+    <hr>
+    <p><button id="myBtn" class="button3" data-bs-toggle="modal" data-bs-target="#myModal" style="background-color: #ff5656; width: 100%;">ลบคอร์สเรียนนี้</button></p>
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" style="text-align: center;">
+                    <h4>ต้องการที่จะลบคอร์สนี้ใช่หรือไม่?</h4>
+                    <a href="{% url 'delete_course' course.id  %}"><button class="btn px-5" style="background-color: rgb(79, 204, 106);">ใช่</button></a>
+                    <button type="button" class="btn px-5" style="background-color: #ff5656;" data-bs-dismiss="modal">ไม่</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

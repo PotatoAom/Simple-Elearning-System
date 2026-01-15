@@ -1,0 +1,35 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block content %}
+<div class="body-container">
+    <div class="row">
+
+        <div class="leftcolumn">
+            <div class="cardbox">
+                <a class="btn btn-danger ms-auto" href="{% url 'delete_enrolled' course.id  %}" style="float: right;">ยกเลิกลงทะเบียน</a>
+                <p><img class="image" src="{{course.image.url}}" style="width: 50%; border-radius: 20px;"></p>        
+                <h2>รหัสวิชา : {{course.id}} &nbsp;|&nbsp; {{course.course_name}}</h2>
+                <hr>
+                <h4>รายละเอียด :</h4>
+                <div class="mb-0 mb-md-5" style="color: gray; text-indent: 2em;">
+                    <p>ชื่อผู้สอน : {{course.owner}}</p>
+                    <p>รหัสคอร์สเรียน : {{course.join_code}}</p>
+                    <p>เวลาในการเรียน : {{course.commit}} ชั่วโมง</p>
+                    <p>วันที่สร้าง : {{course.date|date:"d / M / Y" }}</p>
+                    <p>จำนวนบทเรียน : {{classroom_count}} บท</p>
+                    <p>จำนวน Assignment : {{assign_count}}</p>
+                </div>
+                <h4>เนื้อหาโดยย่อ :</h4>
+                <p class="mb-0 mb-md-5" style="color: gray; text-indent: 2em;">{{course.description}}</p>
+            </div>
+        </div>
+
+        
+        <div class="rightcolumn">
+            {% load student_menu_tags %}
+            {% student_menu course %}
+        </div>
+        
+    </div>
+</div>
+{% endblock%}

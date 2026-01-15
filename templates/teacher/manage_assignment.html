@@ -1,0 +1,126 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block content %}
+<div class="body-container">
+  <div class="row">
+    
+    <div class="leftcolumn p-5">
+      <h3>จัดการ Assignments</h3>
+      <hr>
+      <button type="button" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#assignModal" style="float: right;">สร้าง Assignment +</button>
+      <h3>จำนวน Assigments : [ {{total_assign}} ] </h3>
+      
+      <div class="modal fade" id="assignModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="modal-header">
+                <h4 class="modal-title">เพิ่ม assignments ใหม่</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                หัวข้อ : <input type="text" class="form-control" name="title" placeholder="ชื่อบท" required>
+                คำอธิบาย : <textarea class="form-control" placeholder="เนื้อหา" name="context" required></textarea>  
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">OK</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Assignments ที่</th>
+            <th>หัวข้อ</th>
+            <th>เนื้อหา</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        {% for assign in assign %}
+          {% if assign %}
+          <tr>
+            <td> {{forloop.counter}}</td>
+            <td> {{assign.title}}</td>
+            <td> {{assign.context | truncatechars:100}}</td>
+            <td>
+              <a class="mx-2" data-bs-toggle="modal" data-bs-target="#editModal{{assign.id}}" style="cursor: pointer;"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+              <div class="modal fade" id="editModal{{assign.id}}">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <form method="POST" action="{% url 'edit_assignment' course.slug assign.id %}" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <div class="modal-header">
+                        <h4 class="modal-title">แก้ไข {{assign.title}}</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                      </div>
+                      <div class="modal-body">
+                        หัวข้อ : <input type="text" class="form-control" name="title" placeholder="ชื่อบท" value="{{assign.title}}" required>
+                        คำอธิบาย : <textarea class="form-control" placeholder="เนื้อหา" name="context" required>{{assign.context}}</textarea>     
+                      </div>
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                          <button type="submit" class="btn btn-primary">OK</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+
+              <a class="mx-2" data-bs-toggle="modal" data-bs-target="#delModal{{assign.id}}" style="cursor: pointer;"><i class="fa fa-trash" aria-hidden="true"></i></a>
+              <div id="delModal{{assign.id}}" class="modal fade">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-body" style="text-align: center;">
+                      <h4>ยืนยันที่จะลบใช่หรือไม่?</h4>
+                      <a href="{% url 'delete_assign' assign.id  %}"><button class="btn px-5" style="background-color: rgb(79, 204, 106);">ใช่</button></a>
+                      <button type="button" class="btn px-5" style="background-color: #ff5656;" data-bs-dismiss="modal">ไม่</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          {% endif %}
+        {% empty %}
+          <td><p style="color:gray">ไม่มีข้อมูล</p></td>
+        {% endfor %}
+      </table>
+      <hr>
+
+      <h3>Assignments ที่ผู้เรียนส่งมา</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Id ผู้เรียน</th>
+            <th>ชื่อผู้เรียน</th>
+            <th>Assignments</th>
+            <th>ไฟล์งาน</th>
+          </tr>
+        </thead>
+        {% for student in student %}
+          <tr>
+            <td> {{student.user_id}}</td>
+            <td> {{student.user.first_name}} {{student.user.last_name}}</td>
+            <td> {{student.assign.title}}</td>
+            <td> <a href="{% url 'download_file' student.id %}">{{ student.filename }} ({{ student.assign_file.size|filesizeformat }})</a></td>
+          </tr>
+        {% empty %}
+          <td><p style="color:gray">ไม่มีข้อมูล</p></td>
+        {% endfor %}
+      </table>
+    </div>
+
+
+    <div class="rightcolumn">
+      {% include 'teacher/teacher_menu.html' %}
+    </div>
+
+  </div>
+</div>
+{% endblock content %}

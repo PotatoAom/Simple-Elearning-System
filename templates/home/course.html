@@ -1,0 +1,82 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block content %}
+<header class="container-fluid mx-0">
+  <h1 class="display-1">All Courses</h1>
+  <ul class="breadcrumb">
+    <li><a href="/home">Home</a></li>
+    <li>Courses</li>
+  </ul>
+</header>
+
+
+<div class="body-container">
+  <div class="row">
+
+    <div class="leftcolumn p-3">
+      <h3>คอร์ส / หลักสูตรทั้งหมด</h3>
+      <form method="GET" style="display: flex; gap: 10px;">
+        <input type="text" name="search" placeholder="ค้นหาชื่อคอร์สเรียนที่ต้องการ..." value="{{ request.GET.search }}">
+        <button class="btn" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+        <a class="btn" href="/student/course" style="text-decoration: none; display: flex; align-items: center;"><i class="fa fa-times" aria-hidden="true"></i></a>
+      </form>
+      <hr>
+      <h5>จำนวนคอร์สทั้งหมด [{{total_course}}] วิชา</h5>
+      
+      <div class="content-loader" id="content-loader">
+        <div class="loader"></div>
+      </div>
+
+      <div class="content-body content-hidden" id="main-content">
+        <div class="course-container">
+        {% for c in course %}
+          <div class="course" style="color: gray;" >
+            <div class="course-header" style="color: black;">{{c.course_name|truncatechars:20}}</div>
+            <img class="image" src="{{c.image.url}}">
+            <div class="middle" style="top: 40%;">
+              <a href="{{ c.get_absolute_url }}"><div class="text">ดูเพิ่มเติม</div></a> 
+            </div>
+            <div class="course-body p-1" style="background-color: #fbe8a6;">
+              {{c.get_subject_display}}
+            </div>
+            <div class="course-footer" style="text-align: left;">
+              <p><i class="fa fa-user" aria-hidden="true"></i>&nbsp; {{c.owner.first_name}} {{c.owner.last_name}}</p>
+              <p><i class="fa fa-clock-o" aria-hidden="true"></i>&nbsp; {{c.commit}} ชั่วโมง</p>
+              {% for r in c.course_ratings %}
+                <p><i class="fa fa-star" aria-hidden="true" style="color:#ffe600"></i>&nbsp; {{r.rating}} ( {{c.rating_count}} )</p>
+              {% empty %}
+                <p><i class="fa fa-star" aria-hidden="true" style="color:#ffe600"></i>&nbsp; ยังไม่มีรีวิว</p>
+              {% endfor %}
+            </div>
+            <i class="fa fa-eye" aria-hidden="true"></i> 0 ครั้ง &nbsp;| &nbsp; 
+            <i class="fa fa-user" aria-hidden="true"></i> {{c.studentcourse_set.count}} คน
+          </div>
+        {% empty %}
+          <p style="color:gray">ไม่มีคอร์สเรียนในระบบ</p>
+        {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="rightcolumn">
+      <div class="cardbox">
+        <h2>หมวดหมู่คอร์สเรียน</h2>
+        <form method="GET" id="subject-filter-form">
+          {% for value, label in all_subjects %}
+            <p>
+              <input type="checkbox" name="subject" value="{{ value }}" 
+                {% if value in selected_subjects %}checked{% endif %}
+                onchange="document.getElementById('subject-filter-form').submit();"
+                style="cursor: pointer; width: auto;">
+              {{ label }}
+            </p>
+          {% endfor %}
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock%}
+

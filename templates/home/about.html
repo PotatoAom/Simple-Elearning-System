@@ -1,0 +1,68 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block content %}
+<div id="loader-wrapper">
+    <div class="loader"></div>
+</div>
+
+<div id="content">
+    
+    <header class="container-fluid mx-0">
+        <h1 class="display-1">About Us</h1>
+        <ul class="breadcrumb">
+            <li><a href="/home">Home</a></li>
+            <li>About</li>
+        </ul>
+    </header>
+
+
+    <div id="section1" class="container-fluid p-0">
+        <div class="row g-0">
+
+            <div class="col-md-6 d-flex align-items-center justify-content-center wow animate__zoomIn" data-wow-delay="0.5s">
+                <div class="p-5 mx-5" style="text-align: left;"> 
+                    <h1 class="text-info display-1 text-uppercase">E-Learning Management System</h1>
+                    <h5>เว็ปแอปพลิเคชั่น E-Learning Management System จัดทำขึ้นโดยมีวัตถุประสงค์ที่จะศึกษาวิธีการสร้าง Web Application และโครงสร้างต่างๆของ Django Framework ซึ่งเขียนด้วยภาษา Python 
+                    และฝึกการออกแบบระบบ Web Application เพื่อนำไปต่อยอดในการสร้างและออกแบบระบบ Web Application สามารถนำไปประยุกต์ใช้ในการพัฒนาเว็บแอปพลิเคชั่นในอนาคต</h5>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <img class="w-100 vh-100" src="{% static 'img/about01.jpg' %}" style="object-fit: cover;">
+            </div>
+            
+        </div>
+    </div>
+
+
+    <div id="section4" class="container-fluid" style="background: white;">
+        <h3 style="color: gray;">โปรเจคนี้มีวัตถุประสงค์ในการศึกษาการสร้างเว็ปแอพ (This project made for education purpose)</h3>
+        <h5 style="color: gray;">สามารถนำไปต่อยอดหรือนำไปพัฒนาต่อได้เลย แนบลิ้งไว้ที่ footer (logo Github)</h5>
+    </div>
+
+
+    <div id="section1" class="container-fluid p-0">
+        <div class="row g-0">
+
+            <div class="col-md-6">
+                <img class="w-100 vh-100" src="{% static 'img/about02.jpg' %}" style="object-fit: cover;">
+            </div>
+
+            <div class="col-md-6 d-flex flex-column align-items-end justify-content-center wow animate__zoomIn" data-wow-delay="0.5s">
+                <div class="p-5 mx-5" style="text-align: right; direction: rtl;"> 
+                    <h1 class="text-info display-1 text-uppercase">Project Objectives</h1>
+                    <ul style="list-style-position: inside; padding-right: 0;">
+                        <h5><li>เพื่อศึกษาวิธีการใช้งาน Django Framework</li></h5>
+                        <h5><li>เพื่อฝึกการเขียนโปรแกรมด้วยภาษา Python</li></h5>
+                        <h5><li>ฝึกการออกแบบระบบ Web Applications</li></h5>
+                        <h5><li>เพิ่มช่องทางในการศึกษารูปแบบใหม่</li></h5>
+                        <h5><li>สามารถนำไปต่อยอดการพัฒนาเว็บแอปพลิเคชั่นต่อไปในอนาคต</li></h5>
+                    </ul>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+</div>
+{% endblock%}

@@ -1,0 +1,130 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block content %}
+<div class="body-container">
+  <div class="row">
+
+    <div class="leftcolumn p-5">
+      <h3>จัดการแบบทดสอบ</h3>
+      <hr>
+      <div class="cardbox" style="background: #abf2ff;">
+        <h2>รายละเอียดวิชา</h2>
+        <dd>
+          <p>รหัสแบบทดสอบ : {{course.join_code}}</p>
+          <p>ผู้สอน : {{course.owner.first_name}} {{course.owner.last_name}}</p>
+          <p>คะแนนทั้งหมด : {{total_marks}}</p>
+        </dd>
+      </div>
+      <button type="button" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#assignModal" style="float: right;">สร้างแบบทดสอบ +</button>
+
+      <div class="modal fade" id="assignModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="modal-header">
+                <h4 class="modal-title">สร้างแบบทดสอบใหม่</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                {% csrf_token %}
+                <input type="text" class="form-control" name="question" placeholder="โจทย์/คำถาม" required>
+                <input type="text" class="form-control" name="option1" placeholder="ตัวเลือกที่1" required>
+                <input type="text" class="form-control" name="option2" placeholder="ตัวเลือกที่2" required>
+                <input type="text" class="form-control" name="option3" placeholder="ตัวเลือกที่3" required>
+                <input type="text" class="form-control" name="option4" placeholder="ตัวเลือกที่4" required>
+
+                คำตอบที่ถูกต้อง : 
+                <SELECT name="answer" class="mb-3" required>
+                  <OPTION Value="Option1" name="option1">ตัวเลือกที่ 1</OPTION>
+                  <OPTION Value="Option2" name="option2">ตัวเลือกที่ 2</OPTION>
+                  <OPTION Value="Option3" name="option3">ตัวเลือกที่ 3</OPTION>
+                  <OPTION Value="Option4" name="option4">ตัวเลือกที่ 4</OPTION>
+                </SELECT>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">OK</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <h3>จำนวนคำถามทั้งหมด [ {{total_question}} ] คำถาม</h3>
+      <table>
+      <thead>
+        <tr>
+          <th>โจทย์/คำถาม</th>
+          <th>คำตอบที่ถูก</th>
+          <th>คะแนน</th>
+          <th style="width:20%;">Action</th>
+        </tr>
+      </thead>
+        {% for Question in question %}
+          <tr>
+            <td> {{Question.question}}</td>
+            <td> {{Question.answer}}</td>
+            <td> {{Question.marks}}</td>          
+            <td>
+              <a class="mx-2" data-bs-toggle="modal" data-bs-target="#editModal{{Question.id}}" style="cursor: pointer;"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+              <div class="modal fade" id="editModal{{Question.id}}">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <form method="POST" action="{% url 'edit_exam' course.id Question.id %}" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <div class="modal-header">
+                        <h4 class="modal-title">แก้ไข {{Question.question}}</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                      </div>
+                      <div class="modal-body">
+                        <input type="text" class="form-control" name="question" value="{{ Question.question }}" required>
+                        <input type="text" class="form-control" name="option1" value="{{ Question.option1 }}" required>
+                        <input type="text" class="form-control" name="option2" value="{{ Question.option2 }}" required>
+                        <input type="text" class="form-control" name="option3" value="{{ Question.option3 }}" required>
+                        <input type="text" class="form-control" name="option4" value="{{ Question.option4 }}" required>
+                        คำตอบที่ถูกต้อง : 
+                        <SELECT name="answer" class="mb-3">
+                          <OPTION Value="Option1">ตัวเลือกที่ 1</OPTION>
+                          <OPTION Value="Option2">ตัวเลือกที่ 2</OPTION>
+                          <OPTION Value="Option3">ตัวเลือกที่ 3</OPTION>
+                          <OPTION Value="Option4">ตัวเลือกที่ 4</OPTION>
+                        </SELECT>
+                      </div>
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                          <button type="submit" class="btn btn-primary">OK</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <a class="mx-2" data-bs-toggle="modal" data-bs-target="#delModal{{Question.id}}" style="cursor: pointer;"><i class="fa fa-trash" aria-hidden="true"></i></a>
+              <div id="delModal{{Question.id}}" class="modal fade">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-body" style="text-align: center;">
+                      <h4>ยืนยันที่จะลบใช่หรือไม่?</h4>
+                      <a href="{% url 'delete_question' Question.id  %}"><button class="btn px-5" style="background-color: rgb(79, 204, 106);">ใช่</button></a>
+                      <button type="button" class="btn px-5" style="background-color: #ff5656;" data-bs-dismiss="modal">ไม่</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        {% empty %}
+          <td><p style="color:gray">ไม่มีข้อมูล</p></td>
+        {% endfor %}
+      </table>
+    </div>
+
+
+    <div class="rightcolumn">
+      {% include 'teacher/teacher_menu.html' %}
+    </div>
+
+  </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,158 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block content %}
+<div class="body-container">
+
+  <h1>สรุปการทำแบบทดสอบ</h1>
+  <div class="result-card">
+    <h2 class="result-title">คะแนนของคุณ</h2>
+    <div class="chart-wrapper">
+      <canvas id="scoreChart"></canvas>
+    </div>
+    <div class="result-grid">
+      <div class="info-card info-card-course">
+        <p class="info-label">ชื่อคอร์ส</p>
+        <p class="info-value">{{result.exam.course.course_name}}</p>
+      </div>
+      <div class="info-card info-card-marks">
+        <p class="info-label">คะแนนที่ได้</p>
+        <p class="info-value">{{result.marks}}/{{total_marks}}</p>
+      </div>
+      <div class="info-card info-card-date">
+        <p class="info-label">เวลาที่ส่ง</p>
+        <p class="info-value">{{result.date|date:"d/m/Y H:i"}}</p>
+      </div>
+    </div>
+  </div>
+  <a class="btn btn-info" href="/student/enrolled">กลับหน้าหลัก</a>
+  {% if not rating_check %}
+  <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#myModal">รีวิวคอร์ส</button>
+  {% else %}
+  <button type="button" class="btn btn-secondary" disabled>รีวิวเรียบร้อย</button>
+  {% endif %}
+
+
+  <div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form method="POST" enctype="multipart/form-data" action="{% url 'rate_course' course.id %}">
+          {% csrf_token %}
+          <input type="hidden" id="ratingInput" name="rating" value="{{ course.user_rating|default:0 }}">
+          <div class="modal-header">
+            <h4 class="modal-title">รีวิวคอร์ส</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <ul class="rating-list">
+              {% for i in "54321" %}
+              <li onclick="rate({{ i }}, {{ course.id }})">
+                  <i class="fa fa-star {% if course.user_rating >= i|add:0 %}checked{% endif %}" title="Rate {{ i }}"></i>
+              </li>
+              {% endfor %}
+            </ul>
+            <div id="ratingMessage" class="text-success small mt-2" style="display:none;"></div>
+            <div class="mb-3">
+              <label for="review" class="form-label">ความคิดเห็นเพิ่มเติม</label>
+              <textarea class="form-control" id="review" name="review" rows="3">{{ course.user_review }}</textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">OK</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('scoreChart').getContext('2d');
+  const marks = {{result.marks}};
+  const maxScore = {{total_marks}};
+  
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['คะแนนที่ได้', 'คะแนนที่เหลือ'],
+      datasets: [{
+        data: [marks, maxScore - marks],
+        backgroundColor: [
+          '#4caf50',
+          '#e0e0e0'
+        ],
+        borderColor: [
+          '#388e3c',
+          '#bdbdbd'
+        ],
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            font: {
+              size: 14
+            },
+            padding: 20
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return context.label + ': ' + context.parsed + ' คะแนน';
+            }
+          }
+        }
+      }
+    }
+  });
+</script>
+
+
+<script>
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+          }
+      }
+    }
+    return cookieValue;
+  }
+  const rate = (rating, course_id) => {
+    fetch(`/student/rate/${course_id}/`, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': getCookie('csrftoken'),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ rating: rating })
+    })
+    .then(response => {
+      if (response.ok) {
+        const ratingInput = document.getElementById('ratingInput');
+        if (ratingInput) ratingInput.value = rating;
+
+        const stars = document.querySelectorAll('.rating-list li i.fa-star');
+        stars.forEach((star, idx) => {
+          const val = 5 - idx;
+          if (val <= rating) star.classList.add('checked'); else star.classList.remove('checked');
+        });
+      } 
+    })
+  }
+</script>
+{% endblock%}

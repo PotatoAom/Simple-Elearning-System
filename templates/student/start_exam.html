@@ -1,0 +1,135 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block content %}
+<div id="section1" class="container">
+  <div class="container">
+    <form class="form" autocomplete="off" onsubmit="return saveAns()"  action="/student/calculate-score" method="POST">
+      {% csrf_token %}
+      {% for q in page_obj %}
+      <div class="examcard">
+        <h3>{{ forloop.counter0|add:page_obj.start_index }}. {{q.question}} <label>[ {{q.marks}} คะแนน ]</label></h3>
+        
+        <div class="form-check mx-4">
+          <input type="radio" name="{{ q.id }}" id="{{q.option1}}" value="Option1"required>
+          <label class="form-check-label" for="option1">{{q.option1}}</label>
+        </div>
+
+        <div class="form-check mx-4">
+          <input type="radio" name="{{ q.id }}" id="{{q.option2}}" value="Option2"required>
+          <label class="form-check-label" for="option2">{{q.option2}}</label>
+        </div>
+
+        <div class="form-check mx-4">
+          <input type="radio" name="{{ q.id }}" id="{{q.option3}}" value="Option3"required>
+          <label class="form-check-label" for="option3">{{q.option3}}</label>
+        </div>
+
+        <div class="form-check mx-4 mb-5">
+          <input type="radio" name="{{ q.id }}" id="{{q.option4}}" value="Option4"required>
+          <label class="form-check-label" for="option4">{{q.option4}}</label>
+        </div>
+
+      </div>
+      {% endfor %}
+
+      {%if page_obj.has_previous %}
+          <a href="?page={{page_obj.previous_page_number}}" class="page"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+      {% endif %}
+      <span> [ {{page_obj.number}} / {{questions.count}} ] </span>
+
+      {%if page_obj.has_next %}
+          <a href="?page={{page_obj.next_page_number}}" class="page"><i class="fa fa-arrow-right" aria-hidden="true"></i></a>
+      {% endif %}
+      
+      <p>ตอบแล้ว: <span id="answered-count">0</span> / {{ questions.count }} ข้อ</p>
+      <button id="myBtn" class="btn btn-primary" type="submit">ส่งแบบทดสอบ</button>
+    </form>
+  </div>
+</div>
+
+
+<script>
+  function saveAns(){  
+    const form = document.querySelector('form');
+    
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key !== 'examAnswers') {
+        const value = localStorage.getItem(key);
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value;
+        form.appendChild(input);
+      }
+    }
+    return true;
+  }
+
+  document.addEventListener('DOMContentLoaded', (event) => {
+    const form = document.querySelector('form');
+    const radioButtons = document.querySelectorAll('input[type="radio"]');
+    const totalQuestions = {{ questions.count }};
+
+    function updateAnsweredCount() {
+      let answeredCount = 0;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!isNaN(key)) {
+          answeredCount++;
+        }
+      }
+      document.getElementById('answered-count').textContent = answeredCount;
+    }
+
+    function loadChoices() {
+      const allRadios = document.querySelectorAll('input[type="radio"]');
+      allRadios.forEach(radio => {
+        const savedValue = localStorage.getItem(radio.name);
+        if (savedValue === radio.value) {
+          radio.checked = true;
+        }
+      });
+      updateAnsweredCount();
+    }
+
+    radioButtons.forEach(radio => {
+      radio.addEventListener('change', function() {
+        localStorage.setItem(this.name, this.value);
+        updateAnsweredCount();
+      });
+    });
+
+    loadChoices();
+
+    document.querySelectorAll('.page').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const href = this.getAttribute('href');
+        window.location.href = href;
+      });
+    });
+
+    document.getElementById('myBtn').addEventListener('click', function(e) {
+      const answeredQuestions = new Set();
+      
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key !== 'examAnswers') {
+          answeredQuestions.add(key);
+        }
+      }
+      
+      if (answeredQuestions.size < totalQuestions) {
+        e.preventDefault();
+        alert(`กรุณาตอบคำถามให้ครบทุกข้อ`);
+        return false;
+      }
+    });
+
+    form.addEventListener('submit', function() {
+      localStorage.clear(); 
+    });
+  });
+</script>
+{% endblock%}

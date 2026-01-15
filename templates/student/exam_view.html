@@ -1,0 +1,23 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block content %}
+<div class="body-container">
+    <div class="row">
+
+        <div class="leftcolumn">
+            <div class="cardbox">
+                <h1>เริ่มทำแบบทดสอบ</h1>
+                <p>รหัสวิชา : {{exam.id}} | ชื่อวิชา : {{exam.course.course_name}}</p>
+                <h3>คำชี้แจง :</h3>
+                <p>- ต้องตอบคำถามทุกข้อในแบบทดสอบ<br/>- ก่อนส่งแบบทดสอบ กรุณาตรวจสอบความถูกต้องก่อนส่งทุกครั้ง</p>
+                <h3>จำนวนคำถาม : {{total_questions}}</h3>
+                <h3>คะแนนทั้งหมด : {{total_marks}}</h3>
+                <a href="{% url 'start_exam' exam.id  %}">
+                    <button class="btn btn-primary">เริ่มทำ</button>
+                </a>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock%}

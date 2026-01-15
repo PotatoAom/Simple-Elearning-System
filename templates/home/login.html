@@ -1,0 +1,16 @@
+{% extends 'home/base.html' %}
+{% block content %}
+<form method="POST" novalidate>
+	{% csrf_token %}
+	<h3 class="mb-3">Sign in</h3>
+		<div class="mb-3">
+			<input type="text" class="form-control" name="username" placeholder="Username">
+		</div>
+		<div class="mb-3">
+			<input type="password" class="form-control" name="password" placeholder="Password">
+		</div>
+		<button class="mb-3 btn btn-primary" type="submit">Login</button>
+		<p>Sign Up here. <a href="{%url 'register' %}">Click here</a></p>
+
+{% endblock content%}
+

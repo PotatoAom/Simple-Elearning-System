@@ -1,0 +1,470 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block content %}
+<div class="body-container">
+
+    <div class="row">
+        <div class="leftcolumn p-5">
+            <h3>เพิ่มเนื้อหาใหม่ในบทเรียน</h3>
+            <hr>
+            <form class="my-5" method="post" enctype="multipart/form-data" id="createClassroomForm">
+                {% csrf_token %}
+                <input type="text" class="form-control" name="title" placeholder="ชื่อบท" required>
+                <button class="btn btn-primary" type="submit">เพิ่มบทเรียน</button>
+            </form>
+            
+            <div id="alertContainer"></div>
+            
+            <div id="classroomSection" style="display: none;">
+                <p><strong>เลือกบทเรียนเพื่อจัดการเนื้อหา:</strong></p>
+                <div class="classroom-list" id="classroomList"></div>
+            </div>
+            
+            <div id="contentManager" style="display: none;">
+                <h4>จัดการเนื้อหา: <span id="selectedClassroomName" style="color: #2196F3;"></span></h4>
+                <div class="box-count">
+                    ใช้ไปแล้ว: <span id="boxCount">0</span>/10
+                </div>
+                
+                <div class="button-group">
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#textBoxModal" class="add-box-btn add-textbox-btn" onclick="openTextBoxModal()">
+                        + เพิ่ม Text Box
+                    </button>
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#videoBoxModal" class="add-box-btn add-videobox-btn" onclick="openVideoBoxModal()">
+                        + เพิ่ม Video Box
+                    </button>
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#imageBoxModal" class="add-box-btn add-imagebox-btn" onclick="openImageBoxModal()">
+                        + เพิ่ม Image Box
+                    </button>
+                </div>
+                
+                <div class="box-container" id="boxesContainer">
+                    <!-- Boxes content -->
+                </div>
+            </div>
+        </div>
+
+
+        <div class="rightcolumn">
+            {% include 'teacher/teacher_menu.html' %}
+        </div>
+    </div>
+
+
+    <!-- Text Box Modal -->
+    <div id="textBoxModal" class="modal fade">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>เพิ่ม Text Box</h3>
+            </div>
+            <div class="modal-body">
+            <form id="textBoxForm">
+                <div class="form-group">
+                    <label for="textContent">เนื้อหา:</label>
+                    <textarea id="textContent" name="context" required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="closeBoxModal()">ยกเลิก</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="submitTextBox()">เพิ่ม</button>
+                </div>
+            </form>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Box Modal -->
+    <div id="videoBoxModal" class="modal fade">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>เพิ่ม Video Box</h3>
+            </div>
+            <div class="modal-body">
+            <form id="videoBoxForm">
+                <div class="form-group">
+                    <label for="videoUrl">URL วิดีโอ (YouTube, etc.):</label>
+                    <input type="url" id="videoUrl" name="video" placeholder="https://www.youtube.com/" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="closeBoxModal()">ยกเลิก</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="submitVideoBox()">เพิ่ม</button>
+                </div>
+            </form>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Image Box Modal -->
+    <div id="imageBoxModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>เพิ่ม Image Box</h3>
+                </div>
+                <div class="modal-body">
+                    <form id="imageBoxForm">
+                        <div class="form-group">
+                            <label for="imageFile">เลือกรูปภาพ:</label>
+                            <input type="file" id="imageFile" name="image" accept="image/*" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="closeBoxModal()">ยกเลิก</button>
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="submitImageBox()">เพิ่ม</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    let currentClassroomId = null;
+    let currentCourseSlug = "{{ course.slug }}";
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    // Load classrooms on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        loadClassrooms();
+    });
+
+    // Load classrooms for the course
+    function loadClassrooms() {
+        fetch(`/teacher/get_course_classrooms/${currentCourseSlug}/`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.classrooms.length > 0) {
+                document.getElementById('classroomSection').style.display = 'block';
+                renderClassrooms(data.classrooms);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading classrooms:', error);
+        });
+    }
+
+    // Cancel Button
+    function closeBoxModal() {
+        document.getElementById('textBoxModal').style.display = 'none'; 
+        document.getElementById('videoBoxModal').style.display = 'none';
+        document.getElementById('imageBoxModal').style.display = 'none';
+        document.getElementById('textBoxForm').reset();
+        document.getElementById('videoBoxForm').reset();
+        document.getElementById('imageBoxForm').reset();
+    }
+
+    // Render classrooms
+    function renderClassrooms(classrooms) {
+        const container = document.getElementById('classroomList');
+        container.innerHTML = '';
+        
+        classrooms.forEach(classroom => {
+            const item = document.createElement('div');
+            item.className = 'classroom-item';
+            item.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="flex:1; cursor:pointer;" class="classroom-selectable">
+                        <h4>${classroom.title}</h4>
+                        <p>ID: ${classroom.id} | เนื้อหา: ${classroom.box_count}/10</p>
+                    </div>
+                    <button class="delete-classroom-btn" onclick="event.stopPropagation(); deleteClassroom(${classroom.id})" title="ลบบทเรียน" style="margin-left:8px; background:#e74c3c; color:#fff; border:none; padding:6px 10px; border-radius:3px; cursor:pointer;">X</button>
+                </div>
+            `;
+            item.onclick = () => selectClassroom(classroom.id, classroom.title);
+            container.appendChild(item);
+        });
+    }
+
+    // Delete classroom
+    function deleteClassroom(classroomId) {
+        if (!confirm('คุณต้องการลบบทเรียนนี้หรือไม่?')) return;
+        
+        fetch(`/teacher/delete_content/${classroomId}`, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken,
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(data.message, 'success');
+                if (currentClassroomId === classroomId) {
+                    currentClassroomId = null;
+                    document.getElementById('contentManager').style.display = 'none';
+                }
+                loadClassrooms();
+            } else {
+                showAlert(data.message || 'เกิดข้อผิดพลาดในการลบ', 'error');
+            }
+        })
+        .catch(error => {
+            showAlert('เกิดข้อผิดพลาด: ' + error, 'error');
+        });
+    }
+
+    // Select a classroom
+    function selectClassroom(classroomId, classroomTitle) {
+        currentClassroomId = classroomId;
+        document.getElementById('selectedClassroomName').textContent = classroomTitle;
+        document.getElementById('contentManager').style.display = 'block';
+        loadBoxes();
+        
+        document.querySelectorAll('.classroom-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        event.currentTarget.classList.add('active');
+    }
+
+    // Modal functions for Text Box
+    function openTextBoxModal() {
+        if (!currentClassroomId) {
+            showAlert('กรุณาเลือกบทเรียนก่อน', 'error');
+            return;
+        }
+        document.getElementById('textBoxModal').style.display = 'block';
+    }
+
+    function submitTextBox() {
+        const context = document.getElementById('textContent').value;
+        
+        if (!context) {
+            showAlert('กรุณากรอกข้อมูลให้ครบ', 'error');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('classroom_id', currentClassroomId);
+        formData.append('context', context);
+        
+        fetch('{% url "create_textbox" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken,
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(data.message, 'success');
+                closeBoxModal();
+                loadBoxes();
+                loadClassrooms();
+            } else {
+                showAlert(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            showAlert('เกิดข้อผิดพลาด: ' + error, 'error');
+        });
+    }
+
+    // Modal functions for Video Box
+    function openVideoBoxModal() {
+        if (!currentClassroomId) {
+            showAlert('กรุณาเลือกบทเรียนก่อน', 'error');
+            return;
+        }
+        document.getElementById('videoBoxModal').style.display = 'block';
+    }
+
+    function submitVideoBox() {
+        const video = document.getElementById('videoUrl').value;
+        
+        if (!video) {
+            showAlert('กรุณากรอกข้อมูลให้ครบ', 'error');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('classroom_id', currentClassroomId);
+        formData.append('video', video);
+        
+        fetch('{% url "create_videobox" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken,
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(data.message, 'success');
+                closeBoxModal();
+                loadBoxes();
+                loadClassrooms();
+            } else {
+                showAlert(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            showAlert('เกิดข้อผิดพลาด: ' + error, 'error');
+        });
+    }
+
+    // Modal functions for Image Box
+    function openImageBoxModal() {
+        if (!currentClassroomId) {
+            showAlert('กรุณาเลือกบทเรียนก่อน', 'error');
+            return;
+        }
+        document.getElementById('imageBoxModal').style.display = 'block';
+    }
+
+    function submitImageBox() {
+        const image = document.getElementById('imageFile').files[0];
+        
+        if (!image) {
+            showAlert('กรุณากรอกข้อมูลให้ครบ', 'error');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('classroom_id', currentClassroomId);
+        formData.append('image', image);
+        
+        fetch('{% url "create_imagebox" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken,
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(data.message, 'success');
+                closeBoxModal();
+                loadBoxes();
+                loadClassrooms();
+            } else {
+                showAlert(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            showAlert('เกิดข้อผิดพลาด: ' + error, 'error');
+        });
+    }
+
+    // Load boxes from classroom
+    function loadBoxes() {
+        if (!currentClassroomId) return;
+        
+        fetch(`/teacher/get_classroom_boxes/${currentClassroomId}/`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                renderBoxes(data.boxes);
+                updateBoxCount(data.box_count, data.remaining);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading boxes:', error);
+        });
+    }
+
+    // Render boxes in container
+    function renderBoxes(boxes) {
+        const container = document.getElementById('boxesContainer');
+        container.innerHTML = '';
+        
+        if (boxes.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: #999;">ยังไม่มีเนื้อหาในบทเรียนนี้</p>';
+            return;
+        }
+        
+        boxes.forEach(box => {
+            const boxDiv = document.createElement('div');
+            boxDiv.className = `box-item ${box.box_type}`;
+            
+            let content = '';
+            if (box.box_type === 'textbox') {
+                content = `
+                    <p>${box.context}</p>
+                `;
+            } else if (box.box_type === 'videobox') {
+                content = `
+                    <p>วิดีโอ: <strong>${box.video}</strong></p>
+                `;
+            } else if (box.box_type === 'imagebox') {
+                content = `
+                    <img src="${box.image}" alt="image" style="max-width: 30%; height: auto;">
+                `;
+            }
+            
+            boxDiv.innerHTML = `
+                ${content}
+                <button class="delete-btn" onclick="deleteBox('${box.box_type}', ${box.id})">X</button>
+            `;
+            
+            container.appendChild(boxDiv);
+        });
+    }
+
+    function deleteBox(boxType, boxId) {
+        if (!confirm('คุณต้องการลบเนื้อหานี้หรือไม่?')) return;
+        
+        fetch(`/teacher/delete_box/${boxType}/${boxId}/`, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken,
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(data.message, 'success');
+                loadBoxes();
+                loadClassrooms();
+            } else {
+                showAlert(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            showAlert('เกิดข้อผิดพลาด: ' + error, 'error');
+        });
+    }
+
+    function updateBoxCount(count, remaining) {
+        document.getElementById('boxCount').textContent = count;
+    }
+
+    // Show alert message in container
+    function showAlert(message, type) {
+        const alertContainer = document.getElementById('alertContainer');
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type}`;
+        alertDiv.textContent = message;
+        
+        alertContainer.innerHTML = '';
+        alertContainer.appendChild(alertDiv);
+        
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+    }
+</script>
+
+{% endblock content %}

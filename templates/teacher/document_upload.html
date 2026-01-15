@@ -1,0 +1,42 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block content %}
+<div class="body-container">
+  <div class="row">
+
+    <div class="leftcolumn p-5">
+      <h3>เอกสารประกอบการเรียน</h3>
+      <hr> 
+      <form class="my-5" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <p>ไฟล์เอกสาร : {{ form.doc_file }}<label style="color: gray;">(นามสกุลไฟล์เป็น .pdf , .ppt เป็นต้น)</label></p>
+      <button type="submit" class="btn btn-info" >Upload Files <i class="fa fa-upload" aria-hidden="true"></i></button>
+      </form>
+      <table>
+      <thead class="table-dark">
+        <tr>
+          <th>ลำดับที่</th>
+          <th>เอกสาร</th>
+          <th style="width:20%;">Action</th>
+        </tr>
+      </thead>
+        {% for d in doc %}
+        <tr>
+          <td> {{forloop.counter}}</td>
+          <td>{{d.filename}} ({{ d.doc_file.size|filesizeformat }})</td>
+          <td><a href="{% url 'delete_doc' d.id  %}"><i class="fa fa-trash" aria-hidden="true"></i></a></td>
+        </tr>
+        {% empty %}
+          <td><p style="color:gray">ไม่มีข้อมูล</p></td>
+        {% endfor %}
+      </table>
+    </div>
+
+
+    <div class="rightcolumn">
+      {% include 'teacher/teacher_menu.html' %}
+    </div>
+
+  </div>
+</div>
+{% endblock%}
