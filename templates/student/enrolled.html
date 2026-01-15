@@ -1,0 +1,75 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block content %}
+<header class="container-fluid mx-0">
+  <h1 class="display-1">Your Courses</h1>
+  <ul class="breadcrumb">
+    <li><a href="/home">Home</a></li>
+    <li>Enrolled</li>
+  </ul>
+</header>
+
+
+<div class="container my-5 p-5">
+  <h3>คอร์ส / หลักสูตรที่ลงทะเบียนไว้<button type="button" class="btn btn-info ms-auto" data-bs-toggle="modal" data-bs-target="#myModal" style="float: right;">Join Course</button></h3>
+  <div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Join with Code</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form method="post">
+        {% csrf_token %}
+        <div class="modal-body">  
+          Course code: <input type="text" class="form-control" name="join_code">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Join</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <h5>จำนวนคอร์สที่ลงทะเบียนไว้ [{{total_course}}] วิชา</h5>
+  <div class="content-loader" id="content-loader">
+      <div class="loader"></div>
+  </div>
+
+  <div class="content-body content-hidden" id="main-content">
+    <div class="course-container">
+      {% for Course in courses %}
+        <div class="course">
+          <div class="course-header">{{Course.course.course_name}}</div>
+          <img class="image" src="{{Course.course.image.url}}"> 
+          <div class="middle" style="top: 40%;">
+            <a href="{{ Course.course.get_enrolled_url }}"><div class="text">ดูเพิ่มเติม</div></a> 
+          </div>
+          <div class="course-footer">
+            {% if Course.completed or Course.progress == 100 %}
+              Completed
+            {% else %}
+              In Progress
+            {% endif%}
+          </div>
+          {# Progress Bar: show percent & counts if data available (include assignments and exams) #}
+          {% if Course.total_items and Course.total_items > 0 %}
+          <div class="progress" title="{{ Course.progress }}%" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ Course.progress }}">
+            <div class="progress-done {% if Course.progress < 50 %}low{% elif Course.progress < 80 %}medium{% else %}high{% endif %}" style="width: {{ Course.progress }}%;">{{ Course.progress }}%</div>
+          </div>
+          <div class="meta-text">{{ Course.done_items }} / {{ Course.total_items }} completed</div>
+          {% else %}
+            <div class="meta-text">ยังไม่มีบทเรียนในคอร์สนี้</div>
+          {% endif %}     
+        </div>
+      {% empty %}
+        <p style="color:gray">ยังไม่มีคอร์สเรียนที่ลงทะเบียนไว้</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock%}

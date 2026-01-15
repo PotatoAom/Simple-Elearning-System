@@ -1,0 +1,198 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block content %}
+<div id="loader-wrapper">
+    <div class="loader"></div>
+</div>
+
+
+<div id="content">
+  
+  <div class="container-fluid px-0">
+    <div class="owl-carousel header-carousel position-relative">
+      
+      <div class="item">
+        <img class="w-100 vh-100" src="{% static 'img/home01.jpg' %}" style="object-fit: cover;">
+        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: #1b2553b3;">
+          <div class="container p-5">
+            <h1 class="text-info display-1 text-uppercase">E-Learning Management System</h1>
+            <h4 class="text-white fs-5">ระบบจัดการคอร์สเรียน เว็บไซต์สำหรับการเรียนรู้ สร้างคอร์สเรียนของตนเอง และแบ่งปันความรู้ ประสบการณ์ต่างๆ ทั้งผู้เรียนและผู้สอน สมัครใช้งานฟรีไม่เสียค่าใช้จ่าย ใช้งานง่ายไม่ซับซ้อนมากเหมาะกับคอร์สเรียนพื้นฐานที่ไม่ซับซ้อน</h4>
+            <a href="" class="btn btn-info py-md-3 px-md-5 me-3">Get Started</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="item">
+        <img class="w-100 vh-100" src="{% static 'img/home02.jpg' %}" style="object-fit: cover;">
+        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: #1b2553b3;">
+          <div class="container p-5">
+            <h1 class="text-info display-1 text-uppercase">Choose your right course</h1>
+            <h4 class="text-white fs-5">เลือกคอร์สที่ใช่ สมัครคอร์สเรียนต่างๆ ที่หลายหลายมีให้เลือกมากมายจากผู้สอนมากประสบการณ์ และผู้สอนหน้าใหม่ที่อยากแชร์ประสบการณ์และความรู้ ลงทะเบียนฟรีไม่เสียค่าใช้จ่าย</h4>
+            <a href="#section2" class="btn btn-light py-md-3 px-md-5 me-3">อ่านเพิ่มเติม</a>
+            <a href="/student/course" class="btn btn-info py-md-3 px-md-5 me-3">ค้นหาคอร์ส</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="item">
+        <img class="w-100 vh-100" src="{% static 'img/home03.jpg' %}" style="object-fit: cover;">
+        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: #1b2553b3;">
+          <div class="container p-5">
+            <h1 class="text-info display-1 text-uppercase">Create your own course</h1>
+            <h4 class="text-white fs-5">สร้างคอ์รสเรียนสำหรับแบ่งปันความรู้ และประสบการณ์ กับผู้เรียนจากทั่วทุกมุมโลก สร้างได้ไม่ยาก เน้นความเรียบง่ายไม่ซับซ้อน</h4>
+            <a href="#section3" class="btn btn-light py-md-3 px-md-5 me-3">อ่านเพิ่มเติม</a>
+            <a href="/teacher/course" class="btn btn-info py-md-3 px-md-5 me-3">สร้างคอร์ส</a>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+
+  <div id="section2" class="container">
+    <div class="row g-0">
+
+      <div class="col-md-6 d-flex align-items-center justify-content-center">
+        <div class="p-5 mx-5" style="text-align: left;"> 
+          <h1 class="text-info display-1 text-uppercase">Choose your right course</h1>
+          <h5>เลือกคอร์สที่ใช่ สมัครคอร์สเรียนต่างๆ ที่หลายหลายมีให้เลือกมากมายจากผู้สอนมากประสบการณ์ และผู้สอนหน้าใหม่ที่อยากแชร์ประสบการณ์และความรู้ ลงทะเบียนฟรีไม่เสียค่าใช้จ่าย</h5>
+        </div>
+      </div>
+
+      <div class="col-md-6 wow animate__zoomIn" data-wow-delay="0.5s">
+        <img src="{% static 'img/home04.png' %}">
+      </div>
+        
+    </div>
+  </div>
+
+
+  <div id="section1" class="container-fluid">
+    <div class="container">
+      <div class="row justify-content-center g-4">
+        <div class="col-lg-3">
+          <div class="homecard wow animate__zoomIn">
+            <h1 class="display-1">{{ student }}</h1>
+            <h5>Learners</h5>
+          </div>
+        </div>
+        <div class="col-lg-3">
+          <div class="homecard wow animate__zoomIn" data-wow-delay="0.5s">
+            <h1 class="display-1">{{ teacher }}</h1>
+            <h5>Instructors</h5>
+          </div>
+        </div>
+        <div class="col-lg-3">
+          <div class="homecard wow animate__zoomIn" data-wow-delay="1s">
+            <h1 class="display-1">{{ course }}</h1>
+            <h5>Courses</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="section3" class="container">
+    <div class="row g-0">
+
+      <div class="col-md-6 wow animate__zoomIn" data-wow-delay="0.5s">
+        <img src="{% static 'img/home05.png' %}">
+      </div>
+
+      <div class="col-md-6 d-flex flex-column align-items-end justify-content-center">
+        <div class="p-5 mx-5" style="text-align: right;"> 
+          <h1 class="text-info display-1 text-uppercase">Create your own course</h1>
+          <h5>สร้างคอ์รสเรียนสำหรับแบ่งปันความรู้ และประสบการณ์ กับผู้เรียนจากทั่วทุกมุมโลก สร้างได้ไม่ยาก เน้นความเรียบง่ายไม่ซับซ้อน</h5>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <div id="section1" class="container-fluid my-5" style="height: auto;">
+    <div class="container my-5">
+      <div class="row g-3">
+        <div class="col-lg-5 col-md-6 d-flex flex-column align-items-center justify-content-center wow animate__zoomIn" data-wow-delay="0.3s">
+          <h1 class="text-info text-uppercase display-1">Popular Categories</h1>
+          <h5>หมวดหมู่ที่มีผู้คนสนใจลงทะเบียนมากที่สุด</h5>
+        </div>
+
+        <div class="col-lg-7 col-md-6">
+          <div class="row g-3">
+            <div class="col-lg-6 col-md-12 wow animate__zoomIn">
+              <a class="position-relative d-block" href="/student/course?subject=ai">
+                <img class="img-fluid" src="{% static 'img/ai.jpg' %}" alt="Card image">
+                <div class="bottom-0 position-absolute bg-white text-center py-3 px-3">
+                  Artificial Intelligence
+                </div>
+              </a>
+            </div>
+            <div class="col-lg-6 col-md-12 wow animate__zoomIn" data-wow-delay="0.3s">
+              <a class="position-relative d-block" href="/student/course?subject=development">
+                <img class="img-fluid" src="{% static 'img/development.jpg' %}" alt="Card image">
+                <div class="bottom-0 position-absolute bg-white text-center py-3 px-3">
+                  Development
+                </div>
+              </a>
+            </div>
+            <div class="col-lg-6 col-md-12 wow animate__zoomIn" data-wow-delay="0.6s">
+              <a class="position-relative d-block" href="/student/course?subject=marketing">
+                <img class="img-fluid" src="{% static 'img/marketing.jpg' %}" alt="Card image">
+                <div class="bottom-0 position-absolute bg-white text-center py-3 px-3">
+                  Marketting
+                </div>
+              </a>
+            </div>
+            <div class="col-lg-6 col-md-12 wow animate__zoomIn" data-wow-delay="0.9s">
+              <a class="position-relative d-block h-100" href="/student/course?subject=data">
+                <img class="img-fluid h-100 w-100" src="{% static 'img/data.jpg' %}" alt="Card image" style="object-fit: cover;">
+                <div class="bottom-0 position-absolute bg-white text-center py-3 px-3">
+                  Data Analytics
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="section1" class="container-fluid">
+      <div class="row justify-content-center g-3">
+        {% for course in popular_courses %}
+          <div class="col-lg-3">
+            <div class="card">
+              <img class="image" src="{{course.image.url}}">
+              <div class="card-middle">
+                <a href="{{ course.get_absolute_url }}"><div class="text">ดูเพิ่มเติม</div></a> 
+              </div>
+              <div class="card-title" style="background-color: #fbe8a6;">{{course.course_name|truncatechars:25}}</div>
+              <div class="card-body" style="text-align: left;">
+                <p><i class="fa fa-user-circle" aria-hidden="true"></i>&nbsp; {{course.owner.first_name}} {{course.owner.last_name}}</p>
+                <p><i class="fa fa-clock-o" aria-hidden="true"></i>&nbsp; {{course.commit}} ชั่วโมง</p>
+                {% for r in course.course_ratings %}
+                  <p><i class="fa fa-star" aria-hidden="true" style="color:#ffe600"></i>&nbsp; {{r.rating}} ( {{course.rating_count}} )</p>
+                {% empty %}
+                  <p><i class="fa fa-star" aria-hidden="true" style="color:#ffe600"></i>&nbsp; ยังไม่มีรีวิว</p>
+                {% endfor %}
+                <p><i class="fa fa-user" aria-hidden="true"></i>&nbsp; {{course.studentcourse_set.count}} คน</p>
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <h2 style="color: gray;">ยังไม่มีคอร์สเรียนในระบบ</h2>
+        {% endfor %}
+
+        <div class="col-lg-3 d-flex flex-column align-items-center justify-content-center">
+          <h1 class="text-info text-uppercase display-1">Popular Courses</h1>
+          <h5>คอร์สที่มีผู้คนสนใจลงทะเบียนมากที่สุด</h5>
+        </div>
+      </div>
+  </div>
+
+</div>
+{% endblock%}

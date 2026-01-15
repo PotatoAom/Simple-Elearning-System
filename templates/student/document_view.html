@@ -1,0 +1,27 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block content %}
+<div class="body-container">
+    <div class="row">
+
+        <div class="leftcolumn p-5">
+            <h2>เอกสารประกอบการเรียนทั้งหมด</h2>
+            <hr>
+            <ul>
+                {% for doc in doc %}
+                    <li><a href="{% url 'std_download_file' doc.id %}">{{ doc.filename }} ({{ doc.doc_file.size|filesizeformat }})</a></li>        
+                {% empty %}
+                    <li><p style="color: gray;">ไม่มีเอกสารทีเกี่ยวข้อง</p></li>
+                {% endfor %}
+            </ul>
+        </div>
+
+
+        <div class="rightcolumn">
+            {% load student_menu_tags %}
+            {% student_menu course %}
+        </div>
+
+    </div>
+</div>
+{% endblock%}

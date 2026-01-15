@@ -1,0 +1,57 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% load embed_video_tags %}
+{% block content %}
+<div class="body-container">
+    <div class="row">
+
+        <div class="leftcolumn p-5">
+            <div class="content-loader" id="content-loader">
+                <div class="loader"></div>
+            </div>
+
+            <div class="content-body content-hidden" id="main-content">
+                {% for c in classroom %}
+                <h2>บทที่ {{forloop.counter}} &nbsp:&nbsp {{c.title}}</h2>
+                <hr>
+                {% if content_items %}
+                    {% for item in content_items %}
+                        {% if item.type == 'textbox' %}
+                            <p class="mb-0 mb-md-5" style="text-indent: 2em;">{{ item.obj.context|linebreaksbr }}</p>
+                        {% elif item.type == 'videobox' %}
+                            <div style="text-align:center; margin-bottom:15px;">
+                                {% video item.obj.video "large" %}
+                            </div>
+                        {% elif item.type == 'imagebox' %}
+                            {% if item.obj.image %}
+                                <div style="text-align: center;">
+                                    <img src="{{ item.obj.image.url }}" alt="{{ c.title }}" style="max-width:30%; height:auto; margin-bottom:30px;">
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p style="color: gray;">ไม่มีเนื้อหาประกอบ</p>
+                {% endif %}
+                <hr>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% if done_check %}
+                        <button type="button" class="btn btn-secondary me-auto" disabled>Completed</button>
+                    {% else %}
+                        <button class="btn btn-info me-auto" type="submit">Mark as done</button>
+                    {% endif %}
+                </form>
+                {% endfor %}
+            </div>
+        </div>
+
+
+        <div class="rightcolumn">
+            {% load student_menu_tags %}
+            {% student_menu course %}
+        </div>
+
+    </div>
+</div>
+{% endblock%}

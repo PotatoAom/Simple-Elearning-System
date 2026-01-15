@@ -1,0 +1,19 @@
+{% extends 'home/base.html' %}
+{% block content %}
+<form class="form-with-validation" method="POST">
+	<h3 class="mb-3 text-center">Sign Up</h3>
+	  <div class="mb-3 dropdown text-center">
+		<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">Role : Instructor</button>
+		<ul class="dropdown-menu">
+			<li><a class="dropdown-item" href="{%url 'register' %}">Learner</a></li>
+			<li><a class="dropdown-item" href="{%url 'teacher_register' %}">Instructor</a></li>
+		</ul>
+	  </div>
+	  {% csrf_token %}
+	  {{ form.as_p }}
+<div style="text-align: center;">
+	<button class="mb-2 btn btn-primary" style="align-items: center;" type="submit" value="Register">Register</button>
+</form>
+<p>Already has an account? <a href="{%url 'login' %}">Login</a></p>
+</div>
+{% endblock content%}

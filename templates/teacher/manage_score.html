@@ -1,0 +1,126 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block content %}
+<div class="body-container">
+  <div class="row">
+
+    <div class="leftcolumn p-5">
+      <div class="content-loader" id="content-loader">
+          <div class="loader"></div>
+      </div>
+
+      <div class="content-body content-hidden" id="main-content">
+        <h3>จัดการคะแนนทั้งหมด</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>รหัสนักเรียน</th>
+              <th>ชื่อนักเรียน</th>
+              <th>คะแนนที่ได้</th>
+              <th>เวลาที่ส่ง</th>
+            </tr>
+          </thead>
+            {% for Result in results %}
+            <tr>
+              <td> {{Result.student.id}}</td>
+              <td> {{Result.student.user.first_name}}</td>
+              <td> {{Result.marks}}</td>
+              <td> {{Result.date}}</td>
+            </tr>
+            {% empty %}
+              <td><p style="color:gray">ไม่มีข้อมูล</p></td>
+            {% endfor %}
+        </table>
+        <hr>
+        <h3>สรุปคะแนน</h3>
+        {% for Result in results %}
+        <div class="chart-bar-wrapper mb-3" style="width: auto; height: 500px;">
+          <canvas id="myChart"></canvas> 
+        </div>
+        {% endfor %}
+        <table>
+          <thead>
+            <tr>
+              <th>คะแนนเต็ม</th>
+              <th>คะแนนเฉลี่ย</th>
+              <th>คะแนนมากสุด</th>
+              <th>คะแนนน้อยสุด</th>
+            </tr>
+          </thead>
+          {% if total_result == 0 %}
+            <td><p style="color:gray">ไม่มีข้อมูล</p></td>
+          {% else %}
+            <tr>
+              <td> {{total}}</td>
+              <td> {{average}}</td>
+              <td> {{max}}</td>
+              <td> {{min}}</td>
+            </tr>
+          {% endif %}
+        </table>
+      </div>
+    </div>
+
+
+    <div class="rightcolumn">
+      {% include 'teacher/teacher_menu.html' %}
+    </div>
+
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const labels = [
+    {% for r in results %}
+      "{{ r.student.user.first_name }}"{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+  ];
+
+  const dataValues = [
+    {% for r in results %}
+      {{ r.marks|default:0 }}{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+  ];
+
+  const canvas = document.getElementById('myChart');
+
+  if (labels.length === 0 || dataValues.length === 0) {
+    canvas.style.display = 'none';
+    const wrapper = document.querySelector('.chart-wrapper');
+    if (wrapper) {
+      const p = document.createElement('p');
+      p.style.color = 'gray';
+      p.textContent = 'ไม่มีข้อมูลสำหรับแสดงกราฟ';
+      wrapper.appendChild(p);
+    }
+  } else {
+    const ctx = canvas.getContext('2d');
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'คะแนนที่ได้',
+          data: dataValues,
+          fill: false,
+          borderColor: 'rgb(75, 192, 192)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+        },
+      }
+    });
+  }
+</script>
+{% endblock%}

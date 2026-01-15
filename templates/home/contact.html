@@ -1,0 +1,44 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block content %}
+<header class="container-fluid mx-0">
+    <h1 class="display-1">Contact Us</h1>
+    <ul class="breadcrumb">
+    <li><a href="/home">Home</a></li>
+    <li>Courses</li>
+  </ul>
+</header>
+
+
+<div id="section1" class="container-fluid">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-4 p-3" style="text-align: left; background-color: #d2fdff;">
+                <div class="p-5">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis eget sagittis dolor. Proin laoreet erat eu congue interdum. Nam eu libero vel velit gravida commodo. </p>
+                    <br>
+                    <h5>ติดต่อได้ที่ :</h5>
+                    <p><i class="fa fa-map-marker" aria-hidden="true"></i> : 00/0 Example.rd Bangkok Thailand 00000</p>
+                    <p><i class="fa fa-phone-square" aria-hidden="true"></i> : 000-000-0000</p>
+                    <p><i class="fa fa-envelope-o" aria-hidden="true" ></i> : Testmail@mail.com</p>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="cardbox">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="text" class="form-control" name="title" placeholder="หัวข้อ" required>
+                        <input type="text" class="form-control" name="firstname" placeholder="ชื่อจริง" required>
+                        <input type="text" class="form-control" name="lastname" placeholder="นามสกุล" required>
+                        <input type="text" class="form-control" name="email" placeholder="Email" required>
+                        <textarea class="form-control" placeholder="เนื้อหา" name="context"></textarea required>
+                        <button class="btn btn-info" type="submit">ยืนยัน</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock%}

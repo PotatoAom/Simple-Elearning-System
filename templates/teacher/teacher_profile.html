@@ -1,0 +1,49 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block content %}
+<div id="loader-wrapper">
+    <div class="loader"></div>
+</div>
+
+
+<div id="content">
+
+  <header class="container-fluid mx-0">
+    <h1 class="display-1">My Profile</h1>
+    <ul class="breadcrumb">
+      <li><a href="/home">Home</a></li>
+      <li>Profile</li>
+    </ul>
+  </header>
+
+
+  <div id="section1" class="container-fluid">
+    <div class="container py-5">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h2 class="text-center mb-4">-= ประวัติส่วนตัว =-</h2>
+        <div class="row justify-content-center align-items-start">
+          <div class="col-md-4 text-center">
+            {% for t in teacher %}
+              {% if t.profile_pic %}
+                <img src="{{ t.profile_pic.url }}" alt="Profile Image" class="profile-img img-fluid mb-3">
+              {% endif %}
+            {% endfor %}
+            {{ teacher_form.bio }}
+          </div>
+          <div class="col-md-6">
+            <div class="cardbox p-4">
+              <p><strong>Email :</strong> <span>{{ request.user.email }}</span></p>
+              <p><strong>Joined Date :</strong> <span>{{ request.user.date_joined }}</span></p>
+              <p><strong>First name :</strong> {{ user_form.first_name }}</p>
+              <p><strong>Last name :</strong> {{ user_form.last_name }}</p>
+              <button class="btn btn-primary mt-3" type="submit">ยืนยัน</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

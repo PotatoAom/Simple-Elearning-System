@@ -1,0 +1,57 @@
+{% load static %}
+<div class="cardbox">
+  <h2>Menu</h2>
+  <hr>
+
+  <h4>เอกสารประกอบการเรียน</h4>
+  <ul>
+    <li><a href="{% url 'document_view' course.slug %}">ดูเพิ่มเติม</a></li>
+  </ul>
+
+  <h4>บทเรียน</h4>
+  <ul>
+    {% for Classroom in classview %}
+      {% if Classroom.id in completed_class_ids %}
+        <li>
+          <a href="{% url 'classroom_view' course.slug Classroom.id %}">บทที่ {{ forloop.counter }} &nbsp;:&nbsp; {{ Classroom.title|truncatechars:20 }}</a>
+          <i class="fa fa-check text-success ms-2" aria-hidden="true"></i>
+        </li>
+      {% else %}
+        <li>
+          <a href="{% url 'classroom_view' course.slug Classroom.id %}">บทที่ {{ forloop.counter }} &nbsp;:&nbsp; {{ Classroom.title|truncatechars:20 }}</a>
+        </li>
+      {% endif %}
+    {% empty %}
+      <p style="color: gray;">ไม่มีบทเรียนในคอร์สนี้</p>
+    {% endfor %}
+  </ul>
+
+  <h4>Assignments</h4>
+  <ul>
+    {% for assignitem in assignview %}
+      {% if assignitem.id in completed_assign_ids %}
+        <li>
+          <a href="{% url 'assign_view' course.slug assignitem.id %}">Assignment {{ forloop.counter }}</a>
+          <i class="fa fa-check text-success ms-2" aria-hidden="true"></i>
+        </li>
+      {% else %}
+        <li>
+          <a href="{% url 'assign_view' course.slug assignitem.id %}">Assignment {{ forloop.counter }}</a>
+        </li>
+      {% endif %}
+    {% empty %}
+      <p style="color: gray;">ไม่มี Assignment ในคอร์สนี้</p>
+    {% endfor %}
+  </ul>
+
+  <h4>แบบทดสอบหลังเรียน</h4>
+  
+    {% if classroom_done and assign %}
+      <ul>
+      <li><a href="{% url 'exam_view' course.id %}">แบบทดสอบหลังเรียน</a></li>
+      </ul>
+    {% else %}
+      <p style="color: gray;">กรุณาทำบทเรียนและ Assignment ให้ครบ</p>
+    {% endif %}
+  
+</div>
