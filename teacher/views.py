@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 from django.db.models import Avg, Max, Min, Sum, Q, F
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -162,19 +162,20 @@ def delete_doc(request,pk):
 @user_passes_test(is_teacher)
 def manage_course_content(request,slug):
     course = hmodel.Course.objects.get(slug=slug)
-    classroom = Classroom.objects.all().filter(course=course.id)
-    total_classroom = Classroom.objects.all().filter(course=course.id).count()
+    
+    classroom = Classroom.objects.filter(course=course)
+    total_classroom = classroom.count()
 
     if request.method == 'POST':
-        title=request.POST['title']
+        title = request.POST.get('title')
         
-        if (total_classroom == 15): # ถ้าบทเรียนครบ 15 บทแล้ว จะไม่สามารถสร้างเพิ่มได้อีก
-            sweetify.error(request,f"บทเรียนเต็มแล้ว (มากสุด 15 บท)")
-            return redirect('manage_course_content',slug=course.slug)
+        if total_classroom >= 15:
+            sweetify.error(request, "บทเรียนเต็มแล้ว (มากสุด 15 บท)")
+            return redirect('manage_course_content', slug=course.slug)
 
-        if Classroom.objects.filter(title=title).exists():
-            sweetify.warning(request,f"ชื่อบทนี้ถูกใช้ไปแล้ว")
-            return redirect('manage_course_content',slug=course.slug)
+        if classroom.filter(title=title).exists():
+            sweetify.warning(request, "ชื่อบทนี้ถูกใช้ไปแล้ว")
+            return redirect('manage_course_content', slug=course.slug)
         
         else :
             classroom=Classroom.objects.create(
@@ -477,9 +478,10 @@ def edit_assignment(request, pk, slug):
 
 # download ไฟล์ assignment ของผู้เรียน
 def download_file(request, pk):
-    assignment_file = AssignmentFile.objects.get(id=pk)
-    response = HttpResponse(assignment_file.assign_file, content_type='application/download')
-    response['Content-Disposition'] = f'attachment; filename="{assignment_file.assign_file.url}"'
+    assignment_file = smodel.AssignmentFile.objects.get(id=pk)
+    filename = os.path.basename(assignment_file.assign_file.name)
+    response = HttpResponse(assignment_file.assign_file, content_type='application/octet-stream')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
 
     return response
 
@@ -621,8 +623,8 @@ def delete_question(request,pk):
 @login_required
 @user_passes_test(is_teacher)
 def manage_score(request,slug):
-    exam = Exam.objects.filter(owner=request.user.id)
     course = hmodel.Course.objects.get(slug=slug)
+    exam = Exam.objects.filter(course=course, owner=request.user.id)
     results= smodel.Result.objects.all().filter(exam__in=exam)
     question = Question.objects.all().filter(exam__in=exam)
     total_result = smodel.Result.objects.all().filter(exam__in=exam).count()

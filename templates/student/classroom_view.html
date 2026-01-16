@@ -12,7 +12,7 @@
 
             <div class="content-body content-hidden" id="main-content">
                 {% for c in classroom %}
-                <h2>บทที่ {{forloop.counter}} &nbsp:&nbsp {{c.title}}</h2>
+                <h2>บทที่ {{classroom_number}} &nbsp:&nbsp {{c.title}}</h2>
                 <hr>
                 {% if content_items %}
                     {% for item in content_items %}

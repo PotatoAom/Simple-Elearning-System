@@ -234,6 +234,9 @@ def std_download_file(request, pk):
 def classroom_view(request,classroom_id,slug):
     course = hmodel.Course.objects.get(slug=slug)
     classroom = tmodel.Classroom.objects.filter(id=classroom_id)
+    all_classroom = list(tmodel.Classroom.objects.filter(course_id=course).order_by('id'))
+    current_classroom = tmodel.Classroom.objects.get(id=classroom_id)
+    classroom_number = all_classroom.index(current_classroom) + 1
 
     done = tmodel.Classroom.objects.get(id=classroom_id)
     done_check = ClassroomDone.objects.filter(classroom_id=done,user_id=request.user)
@@ -263,7 +266,13 @@ def classroom_view(request,classroom_id,slug):
 
     content_items.sort(key=lambda x: x['date'])
 
-    return render(request,'student/classroom_view.html',{'course': course,'classroom': classroom,'done_check': done_check,'content_items': content_items})
+    return render(request,'student/classroom_view.html',{
+        'course': course,
+        'classroom': classroom,
+        'classroom_number': classroom_number,
+        'done_check': done_check,
+        'content_items': content_items
+        })
 
 
 # ดู assignment ทั้งหมด

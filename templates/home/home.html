@@ -162,36 +162,36 @@
   </div>
 
   <div id="section1" class="container-fluid">
-      <div class="row justify-content-center g-3">
-        {% for course in popular_courses %}
-          <div class="col-lg-3">
-            <div class="card">
-              <img class="image" src="{{course.image.url}}">
-              <div class="card-middle">
-                <a href="{{ course.get_absolute_url }}"><div class="text">ดูเพิ่มเติม</div></a> 
-              </div>
-              <div class="card-title" style="background-color: #fbe8a6;">{{course.course_name|truncatechars:25}}</div>
-              <div class="card-body" style="text-align: left;">
-                <p><i class="fa fa-user-circle" aria-hidden="true"></i>&nbsp; {{course.owner.first_name}} {{course.owner.last_name}}</p>
-                <p><i class="fa fa-clock-o" aria-hidden="true"></i>&nbsp; {{course.commit}} ชั่วโมง</p>
-                {% for r in course.course_ratings %}
-                  <p><i class="fa fa-star" aria-hidden="true" style="color:#ffe600"></i>&nbsp; {{r.rating}} ( {{course.rating_count}} )</p>
-                {% empty %}
-                  <p><i class="fa fa-star" aria-hidden="true" style="color:#ffe600"></i>&nbsp; ยังไม่มีรีวิว</p>
-                {% endfor %}
-                <p><i class="fa fa-user" aria-hidden="true"></i>&nbsp; {{course.studentcourse_set.count}} คน</p>
-              </div>
+    <div class="row justify-content-center g-3">
+      {% for course in popular_courses %}
+        <div class="col-lg-3">
+          <div class="card">
+            <img class="image" src="{{course.image.url}}">
+            <div class="card-middle">
+              <a href="{{ course.get_absolute_url }}"><div class="text">ดูเพิ่มเติม</div></a> 
+            </div>
+            <div class="card-title" style="background-color: #fbe8a6;">{{course.course_name|truncatechars:25}}</div>
+            <div class="card-body" style="text-align: left;">
+              <p><i class="fa fa-user-circle" aria-hidden="true"></i>&nbsp; {{course.owner.first_name}} {{course.owner.last_name}}</p>
+              <p><i class="fa fa-clock-o" aria-hidden="true"></i>&nbsp; {{course.commit}} ชั่วโมง</p>
+              {% for r in course.course_ratings %}
+                <p><i class="fa fa-star" aria-hidden="true" style="color:#ffe600"></i>&nbsp; {{r.rating}} ( {{course.rating_count}} )</p>
+              {% empty %}
+                <p><i class="fa fa-star" aria-hidden="true" style="color:#ffe600"></i>&nbsp; ยังไม่มีรีวิว</p>
+              {% endfor %}
+              <p><i class="fa fa-user" aria-hidden="true"></i>&nbsp; {{course.studentcourse_set.count}} คน</p>
             </div>
           </div>
-        {% empty %}
-          <h2 style="color: gray;">ยังไม่มีคอร์สเรียนในระบบ</h2>
-        {% endfor %}
-
-        <div class="col-lg-3 d-flex flex-column align-items-center justify-content-center">
-          <h1 class="text-info text-uppercase display-1">Popular Courses</h1>
-          <h5>คอร์สที่มีผู้คนสนใจลงทะเบียนมากที่สุด</h5>
         </div>
+      {% empty %}
+        <h2 style="color: gray;">ยังไม่มีคอร์สเรียนในระบบ</h2>
+      {% endfor %}
+
+      <div class="col-lg-3 d-flex flex-column align-items-center justify-content-center">
+        <h1 class="text-info text-uppercase display-1">Popular Courses</h1>
+        <h5>คอร์สที่มีผู้คนสนใจลงทะเบียนมากที่สุด</h5>
       </div>
+    </div>
   </div>
 
 </div>

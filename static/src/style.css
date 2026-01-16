@@ -126,57 +126,6 @@
     margin-bottom: 30px;
   }
 
-/* responsive layouts */
-  @media screen and (max-width: 800px) {
-    h1, h2, h3, h4, h5, h6, p, .header, .footer {
-      font-size: 3vw
-    }
-    a, table, form, input, button, textarea {
-      font-size: 2vw !important;
-    }
-    .text {
-      font-size: 2.2vw !important;
-    }
-    .button2 {
-      font-size: 1.7vw;
-      height: auto;
-      width: 30% !important;
-      display: block;
-      margin-left: 0;
-      margin-right: 0;
-    }
-    .button3, button {
-      font-size: 1.7vw !important;
-    }
-    .carousel-slide{
-      width: 100% !important;
-      font-size: 2vw !important;
-    }
-    .course-container {
-      display: grid;
-      grid-template-columns: auto !important;
-      gap: 70px 50px;
-      padding: 10px;
-      font-size: 2vw;
-    }
-
-    .item-container {
-      display: grid;
-      grid-template-columns: auto !important;
-      gap: 30px;
-      padding: 10px;
-      width: auto;
-      }
-    
-    #section1 , #section2, #section3, #section4 {
-      height: auto !important;
-      padding: 30px;
-    }
-
-    .display-1 {
-      font-size: 5vw;
-    }
-  }
 
 
 /* HTML Layout Styles */
@@ -331,13 +280,6 @@
     float: left;
     width: 20%;
     padding-left: 20px;
-  }
-
-  @media screen and (max-width: 1440px) {
-    .leftcolumn, .rightcolumn {   
-      width: 100%;
-      padding: 0;
-    }
   }
   
   /* menu button */
@@ -889,4 +831,99 @@
     margin: 5px 0;
     font-size: 12px;
     color: #666;
+  }
+
+
+
+/* responsive layouts */
+  /* Desktop PC*/
+  @media screen and (max-width: 1360px) {
+    .leftcolumn, .rightcolumn {   
+      width: 100%;
+      padding: 0;
+    }
+  }
+  
+  /* Tablet */
+  @media screen and (min-width: 769px) and (max-width: 1359px) {
+    .leftcolumn, .rightcolumn {   
+      width: 100%;
+      padding: 0;
+    }
+    .row {
+      flex-direction: column;
+    }
+
+    .col-lg-3, .col-lg-5, .col-lg-6, .col-lg-7, .col-md-6, .col-md-12 {
+      width: 100% !important;
+      max-width: 100% !important;
+      flex: 0 0 100% !important;
+    }
+
+    h1, h2, h3, h4, h5, h6, p, .header, .footer, a, li, table, form, input, button, textarea  {
+      font-size: 1.5vw !important;
+    }
+
+    #section1, #section2, #section3, #section4 {
+      height: auto !important;
+      padding: 50px 20px;
+    }
+  }
+
+  /* Mobile */
+  @media screen and (min-width: 480px) and (max-width: 768px) {
+    h1, h2, h3, h4, h5, h6, p, .header, .footer {
+      font-size: 3vw !important;
+    }
+
+    a, li, table, form, input, button, textarea {
+      font-size: 2vw !important;
+    }
+
+    .text {
+      font-size: 2.2vw !important;
+    }
+
+    .button2 {
+      font-size: 1.7vw;
+      height: auto;
+      width: 30% !important;
+      display: block;
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+    .button3, button {
+      font-size: 1.7vw !important;
+    }
+
+    .carousel-slide{
+      width: 100% !important;
+      font-size: 2vw !important;
+    }
+
+    .course-container {
+      display: grid;
+      grid-template-columns: auto !important;
+      gap: 70px 50px;
+      padding: 10px;
+      font-size: 2vw;
+    }
+
+    .item-container {
+      display: grid;
+      grid-template-columns: auto !important;
+      gap: 30px;
+      padding: 10px;
+      width: auto;
+    }
+
+    #section1 , #section2, #section3, #section4 {
+      height: auto !important;
+      padding: 30px;
+    }
+
+    .display-1 {
+      font-size: 5vw;
+    }
   }
