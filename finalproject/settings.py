@@ -127,7 +127,7 @@ else:
             'HOST': os.getenv('POSTGRES_HOST'),
             'PORT': os.getenv('POSTGRES_PORT', '5432'),
             'OPTIONS': {'sslmode': 'require'},
-            'CONN_MAX_AGE': 600, 
+            'CONN_MAX_AGE': 0, 
         }
     }
 
@@ -172,6 +172,9 @@ FILE_UPLOAD_HANDLERS = [
     'django.core.files.uploadhandler.TemporaryFileUploadHandler',
 ]
 
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
+
 if DEBUG:
     MEDIA_URL = '/media/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -192,6 +195,8 @@ else:
     AWS_S3_CUSTOM_DOMAIN = f'{os.getenv("SUPABASE_PROJECT_ID")}.supabase.co/storage/v1/object/public/{AWS_STORAGE_BUCKET_NAME}'
     
     AWS_S3_FILE_OVERWRITE = False
+    AWS_DEFAULT_ACL = None
+    AWS_S3_VERIFY = True
     AWS_QUERYSTRING_AUTH = False
     
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
