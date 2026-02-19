@@ -3,7 +3,7 @@ certifi
 charset-normalizer
 click
 colorama
-Django
+django
 django-widget-tweaks
 django-crispy-forms
 crispy-bootstrap4
