@@ -192,13 +192,13 @@ else:
     AWS_SECRET_ACCESS_KEY = os.getenv('SUPABASE_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = os.getenv('SUPABASE_BUCKET_NAME')
     AWS_S3_ENDPOINT_URL = os.getenv('SUPABASE_S3_ENDPOINT')
-    AWS_S3_CUSTOM_DOMAIN = f'{os.getenv("SUPABASE_PROJECT_ID")}.supabase.co/storage/v1/object/public/{AWS_STORAGE_BUCKET_NAME}'
-    
+    AWS_S3_REGION_NAME = os.getenv('SUPABASE_REGION_NAME')
     AWS_S3_FILE_OVERWRITE = False
     AWS_DEFAULT_ACL = None
     AWS_S3_VERIFY = True
     AWS_QUERYSTRING_AUTH = False
-    
+
+    AWS_S3_CUSTOM_DOMAIN = f'{os.getenv("SUPABASE_PROJECT_ID")}.supabase.co/storage/v1/object/public/{AWS_STORAGE_BUCKET_NAME}'
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
 
     STORAGES = {
