@@ -19,7 +19,25 @@ E-learning Management System Project หรือ SimpleCourse จัดทำ�
 ## Install Requirements
   + Python 3.12
   + Django Framework
-  + Docker
+
+## Installing
+  + git clone https://github.com/PotatoAom/Simple-Elearning-System.git
+  + ติดตั้ง Python libraries ที่จำเป็น
+  ```
+  pip install -r requirements.txt
+  ```
+  + สร้าง database สำหรับ sqlite3
+  ```
+  python manage.py migrate
+  ```
+  + สร้าง superuser สำหรับใช้งาน django admin
+  ```
+  python manage.py createsuperuser
+  ```
+  + runserver ในโหมด developer mode
+  ```
+  python manage.py runserver
+  ```
 
 ## วัตถุประสงค์
   + เพื่อศึกษาวิธีการใช้งาน Django Framework

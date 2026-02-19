@@ -26,11 +26,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False # switch to DEBUG = False for Production
+DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS","*").split(",")
 
-CSRF_TRUSTED_ORIGINS = os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS","http://127.0.0.1:8000").split(",") # Your domain
+CSRF_TRUSTED_ORIGINS = os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS","http://127.0.0.1:8000").split(",")
 
 # Application definition
 INSTALLED_APPS = [
@@ -65,22 +65,26 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware', 
 ]
 
-# security.W016
-CSRF_COOKIE_SECURE = True
+if not DEBUG:
+    # security.W016
+    CSRF_COOKIE_SECURE = True
 
-# security.W012
-SESSION_COOKIE_SECURE = True
+    # security.W012
+    SESSION_COOKIE_SECURE = True
 
-# security.W008
-SECURE_SSL_REDIRECT = True # Set to true if you have SSL certificate
+    # security.W008
+    SECURE_SSL_REDIRECT = True
 
-# security.W004
-SECURE_HSTS_SECONDS = 31536000 # One year in seconds
+    # security.W004
+    SECURE_HSTS_SECONDS = 31536000
 
-# Another security settings
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
+    # Another security settings
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+
+else:
+    SECURE_SSL_REDIRECT = False
 
 ROOT_URLCONF = 'finalproject.urls'
 
@@ -103,36 +107,29 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'finalproject.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-
-'''
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
-'''
-
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DATABASE'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('POSTGRES_HOST'),
-        'PORT': os.getenv('POSTGRES_PORT', '5432'),
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
-        'CONN_MAX_AGE': 0, 
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('POSTGRES_DATABASE'),
+            'USER': os.getenv('POSTGRES_USER'),
+            'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+            'HOST': os.getenv('POSTGRES_HOST'),
+            'PORT': os.getenv('POSTGRES_PORT', '5432'),
+            'OPTIONS': {'sslmode': 'require'},
+            'CONN_MAX_AGE': 600, 
+        }
     }
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -170,38 +167,47 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STORAGES = {
-    "default": {
-        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
-    },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
-
 FILE_UPLOAD_HANDLERS = [
     'django.core.files.uploadhandler.MemoryFileUploadHandler',
     'django.core.files.uploadhandler.TemporaryFileUploadHandler',
 ]
 
-AWS_ACCESS_KEY_ID = os.getenv('SUPABASE_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.getenv('SUPABASE_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = os.getenv('SUPABASE_BUCKET_NAME')
-AWS_S3_REGION_NAME = os.getenv('SUPABASE_REGION_NAME')
-AWS_S3_ENDPOINT_URL = os.getenv('SUPABASE_S3_ENDPOINT')
+if DEBUG:
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+    
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+else:
+    AWS_ACCESS_KEY_ID = os.getenv('SUPABASE_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.getenv('SUPABASE_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = os.getenv('SUPABASE_BUCKET_NAME')
+    AWS_S3_ENDPOINT_URL = os.getenv('SUPABASE_S3_ENDPOINT')
+    AWS_S3_CUSTOM_DOMAIN = f'{os.getenv("SUPABASE_PROJECT_ID")}.supabase.co/storage/v1/object/public/{AWS_STORAGE_BUCKET_NAME}'
+    
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_QUERYSTRING_AUTH = False
+    
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
 
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
-AWS_S3_VERIFY = True
-AWS_QUERYSTRING_AUTH = False
-
-AWS_S3_CUSTOM_DOMAIN = f'{os.getenv("SUPABASE_PROJECT_ID")}.supabase.co/storage/v1/object/public/{AWS_STORAGE_BUCKET_NAME}'
-MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 
 # Default primary key field type
